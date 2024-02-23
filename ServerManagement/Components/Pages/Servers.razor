@@ -8,7 +8,13 @@
         @foreach (var city in cities)
         {
             <div class="col">
-                <button type="button" class="btn btn-primary">@city</button>
+                <div class="card">
+                    <img src="@($"/images/{city}.png")" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary">@city</button>
+                    </div>
+                </div>
+                
             </div>
         }
     </div>

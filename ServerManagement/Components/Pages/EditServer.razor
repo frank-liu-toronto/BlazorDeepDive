@@ -6,7 +6,9 @@
 
 @if (server != null)
 {
-    <EditForm Model="server" FormName="formServer" OnSubmit="Submit">
+    <EditForm Model="server" FormName="formServer" OnValidSubmit="Submit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
 
         <InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
 
@@ -16,7 +18,10 @@
             </div>
             <div class="col-6">
                 <InputText @bind-Value="server.Name" class="form-control"></InputText>
-            </div>            
+            </div>   
+            <div class="col">
+                <ValidationMessage For="() => server.Name"></ValidationMessage>
+            </div>
         </div>
 
         <div class="row mb-3">
@@ -25,6 +30,9 @@
             </div>
             <div class="col-6">
                 <InputText @bind-Value="server.City" class="form-control"></InputText>
+            </div>
+            <div class="col">
+                <ValidationMessage For="() => server.City"></ValidationMessage>
             </div>
         </div>
 

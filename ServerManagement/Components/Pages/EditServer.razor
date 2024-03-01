@@ -6,7 +6,9 @@
 
 @if (server != null)
 {
-    <EditForm Model="server">
+    <EditForm Model="server" FormName="formServer" OnSubmit="Submit">
+
+        <InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
 
         <div class="row mb-3">
             <div class="col-2">
@@ -34,11 +36,12 @@
                 <InputCheckbox @bind-Value="server.IsOnline" class="form-check-input"></InputCheckbox>
             </div>
         </div>
-        
+        <br/>
+        <button class="btn btn-primary" type="submit">Update</button>
+        &nbsp;
+        <a href="/servers" class="btn btn-primary">Close</a>
     </EditForm>
 }
-<br/>
-<a href="/servers" class="btn btn-primary">Close</a>
 
 
 @code {
@@ -46,11 +49,20 @@
     [Parameter]
     public int Id { get; set; }
 
-    private Server? server;
+    [SupplyParameterFromForm]
+    private Server? server { get; set; }
 
     protected override void OnParametersSet()
     {
-        server = ServersRepository.GetServerById(this.Id);
+        server ??= ServersRepository.GetServerById(this.Id);
+    }
+
+    private void Submit()
+    {
+        if (server != null)
+        {
+            ServersRepository.UpdateServer(server.ServerId, server);
+        }
     }
 
 }

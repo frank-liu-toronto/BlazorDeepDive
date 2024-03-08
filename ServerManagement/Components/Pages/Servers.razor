@@ -39,7 +39,7 @@
 <ul>
     @foreach(var server in servers)
     {
-        <li>
+        <li @key="server.ServerId">
             @server.Name in @server.City is 
             <span style="color:@((server.IsOnline ? "green" : "red"))">
                 @(server.IsOnline ? "online" : "offline")

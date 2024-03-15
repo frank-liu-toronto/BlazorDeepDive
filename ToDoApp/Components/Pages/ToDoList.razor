@@ -15,12 +15,43 @@
 <br />
 @if (items != null && items.Count > 0)
 {
-    <ul>
+    <ul class="list-unstyled">
         @foreach(var item in items)
         {
             <li @key="item.Id">
-                <div class="mb-2">
-                    <input type="text" class="form-control border-0" @bind-value="item.Name" />
+                <div class="row mb-2">
+                    <div class="col-1" style="width:30px">
+                        <input 
+                            type="checkbox"
+                            style="vertical-align:middle"
+                            class="form-check-input"
+                            @bind-value="item.IsCompleted"                            
+                            checked="@item.IsCompleted" />
+                    </div>
+                    <div class="col">
+                        @if (item.IsCompleted)
+                        {
+                            <input type="text"
+                                   style="vertical-align:middle"
+                                   class="form-control border-0 text-decoration-line-through"
+                                   @bind-value="item.Name" 
+                                   disabled/>
+                        }
+                        else
+                        {
+                            <input type="text"
+                                   style="vertical-align:middle"
+                                   class="form-control border-0"
+                                   @bind-value="item.Name" />
+                        }
+                        
+                    </div>
+                    <div class="col">
+                        @if (item.IsCompleted)
+                        {
+                            <text>Completed at: @item.DateCompleted.ToLongDateString()</text>
+                        }
+                    </div>
                 </div>                
             </li>
         }

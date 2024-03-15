@@ -19,7 +19,9 @@
         @foreach(var item in items)
         {
             <li @key="item.Id">
-                @item.Name
+                <div class="mb-2">
+                    <input type="text" class="form-control border-0" @bind-value="item.Name" />
+                </div>                
             </li>
         }
     </ul>

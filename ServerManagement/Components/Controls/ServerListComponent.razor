@@ -1,30 +1,41 @@
 ﻿@inject NavigationManager NavigationManager
 
-<ul>
 
-    <Virtualize Items="this.servers" Context="server">
-        <li @key="server.ServerId">
-            @server.Name in @server.City is
-            <span style="color:@((server.IsOnline ? "green" : "red"))">
-                @(server.IsOnline ? "online" : "offline")
-            </span>
-            &nbsp;
-            <a href="/servers/@server.ServerId" class="btn btn-link">Edit</a>
-            &nbsp;
-            <EditForm Model="server"
-                      FormName="@($"form-server-{server.ServerId}")"
-                      OnValidSubmit="@(() => { DeleteServer(server.ServerId); })">
-                <button type="submit" class="btn btn-primary">Delete</button>
-            </EditForm>
+@if (this.servers != null && this.servers.Count > 0)
+{
+    <ul>
+        <Virtualize Items="this.servers" Context="server">
+            <li @key="server.ServerId">
+                @server.Name in @server.City is
+                <span style="color:@((server.IsOnline ? "green" : "red"))">
+                    @(server.IsOnline ? "online" : "offline")
+                </span>
+                &nbsp;
+                <a href="/servers/@server.ServerId" class="btn btn-link">Edit</a>
+                &nbsp;
+                <EditForm Model="server"
+                          FormName="@($"form-server-{server.ServerId}")"
+                          OnValidSubmit="@(() => { DeleteServer(server.ServerId); })">
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </EditForm>
 
-        </li>
-    </Virtualize>
+            </li>
+        </Virtualize>
 
-</ul>
+    </ul>
+}
 
 @code {
 
-    private List<Server> servers = ServersRepository.GetServersByCity("Toronto");
+    [Parameter]
+    public string? CityName { get; set; }
+
+    private List<Server>? servers;
+
+    protected override void OnParametersSet()
+    {
+        servers = ServersRepository.GetServersByCity(CityName??"Toronto");
+    }
 
     private void DeleteServer(int serverId)
     {

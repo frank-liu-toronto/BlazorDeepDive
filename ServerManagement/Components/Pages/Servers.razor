@@ -8,11 +8,11 @@
 <br/>
 <br/>
 
-<CityListComponent SelectCityCallback="HandleCitySelection"></CityListComponent>
+<CityListComponent @ref="cityListComponent" SelectCityCallback="HandleCitySelection"></CityListComponent>
 
 <br />
 
-<SearchBarComponent SearchServerCallback="HandleSearchServer"></SearchBarComponent>
+<SearchBarComponent @ref="searchBarComponent" SearchServerCallback="HandleSearchServer"></SearchBarComponent>
 
 <br/>
 
@@ -29,6 +29,9 @@
     private string selectedCity = "Toronto";
     private string searchFilter = "";
 
+    private CityListComponent? cityListComponent;
+    private SearchBarComponent? searchBarComponent;
+
     private void HandleSearch()
     {
         //this.servers = ServersRepository.SearchServers(serverFilter);
@@ -39,11 +42,15 @@
     private void HandleCitySelection(string cityName)
     {
         selectedCity = cityName;
+
         this.searchFilter = string.Empty;
+        searchBarComponent?.ClearFilter();
     }
 
     private void HandleSearchServer(string searchFilter)
     {
         this.searchFilter = searchFilter;
+
+        cityListComponent?.ClearSelection();
     }
 }

@@ -10,6 +10,11 @@
     [Parameter]
     public EventCallback<string> SearchServerCallback { get; set; }
 
+    public void ClearFilter()
+    {
+        this.serverFilter = string.Empty;
+    }
+
     private string serverFilter = "";
 
     private void HandleSearch()

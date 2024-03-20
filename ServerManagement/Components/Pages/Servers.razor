@@ -8,7 +8,7 @@
 <br/>
 <br/>
 
-<CityListComponent></CityListComponent>
+<CityListComponent SelectCityCallback="HandleCitySelection"></CityListComponent>
 
 <br />
 
@@ -23,14 +23,14 @@
 
 <ServerListComponent 
     @rendermode="InteractiveServer" 
-    CityName="Toronto" ></ServerListComponent>
+    CityName="@this.selectedCity" ></ServerListComponent>
 
 <p>
     <a href="/servers/add" class="btn btn-primary">Add Server</a>
 </p>
 
-@code {            
-
+@code {
+    private string selectedCity = "Toronto";
     private string _serverFilter = "";
     private string serverFilter { 
         get=>_serverFilter; 
@@ -43,12 +43,17 @@
             //this.servers = ServersRepository.SearchServers(_serverFilter);
         }
     }    
-    
+
     private void HandleSearch()
     {
         //this.servers = ServersRepository.SearchServers(serverFilter);
 
         //this.selectedCity = string.Empty;
+    }
+
+    private void HandleCitySelection(string cityName)
+    {
+        selectedCity = cityName;
     }
 
 }

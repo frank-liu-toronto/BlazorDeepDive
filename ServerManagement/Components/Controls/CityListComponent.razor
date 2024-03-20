@@ -1,0 +1,30 @@
+﻿
+@if (cities != null && cities.Count > 0)
+{
+    <div class="container-fluid text-center">
+        <div class="row w-50">
+            @foreach (var city in cities)
+            {
+                <CityComponent 
+                    city="@city"
+                    selectedCity="@selectedCity"></CityComponent>
+            }
+        </div>
+    </div>
+
+}
+
+@code {
+
+    private string selectedCity = "Toronto";
+
+    private List<String> cities = CitiesRepository.GetCities();
+
+    private void SelectCity(string cityName)
+    {
+        this.selectedCity = cityName;
+
+        //this.servers = ServersRepository.GetServersByCity(this.selectedCity);
+    }
+
+}

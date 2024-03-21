@@ -26,6 +26,19 @@
             </button>
         }
         &nbsp;
+
+        @if (Server.IsOnline)
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(0, 500);
+            <text>@randomNumber</text>
+        }
+        else
+        {
+            <text>N/A</text>
+        }
+
+        &nbsp;
         <a href="/servers/@Server.ServerId" class="btn btn-link">Edit</a>
         &nbsp;
         <EditForm Model="Server"

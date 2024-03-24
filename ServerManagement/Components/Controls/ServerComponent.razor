@@ -2,52 +2,57 @@
 
 @if (Server != null)
 {
-    <li @key="Server.ServerId" style="background-color: @GetBackgroundColor()">
-        @Server.Name in @Server.City is
-        <span style="color:@((Server.IsOnline ? "green" : "red"))">
+    <tr style="background-color: @GetBackgroundColor()">
+        <td>
+            @Server.Name
+        </td>
+        <td>
+            @Server.City
+        </td>
+        <td style="color:@((Server.IsOnline ? "green" : "red"))">
             @(Server.IsOnline ? "online" : "offline")
-        </span>
-        &nbsp;
+        </td>
+        <td>
+            @if (Server.IsOnline)
+            {
+                Random random = new Random();
+                int randomNumber = random.Next(0, 500);
+                <text>@randomNumber</text>
+            }
+            else
+            {
+                <text>N/A</text>
+            }
+        </td>
+        <td>
+            @if (Server.IsOnline)
+            {
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        @onclick="@(()=> {Server.IsOnline = false;})">
+                    Turn Off
+                </button>
+            }
+            else
+            {
+                <button type="button"
+                        class="btn btn-outline-success"
+                        @onclick="@(()=> {Server.IsOnline = true;})">
+                    Turn On
+                </button>
+            }
+            &nbsp;
+            <a href="/servers/@Server.ServerId" class="btn btn-outline-primary">Edit</a>
 
-        @if (Server.IsOnline)
-        {
-            <button type="button"
-                    class="btn btn-outline-danger"
-                    @onclick="@(()=> {Server.IsOnline = false;})">
-                Turn Off
-            </button>
-        }
-        else
-        {
-            <button type="button"
-                    class="btn btn-outline-success"
-                    @onclick="@(()=> {Server.IsOnline = true;})">
-                Turn On
-            </button>
-        }
-        &nbsp;
-
-        @if (Server.IsOnline)
-        {
-            Random random = new Random();
-            int randomNumber = random.Next(0, 500);
-            <text>@randomNumber</text>
-        }
-        else
-        {
-            <text>N/A</text>
-        }
-
-        &nbsp;
-        <a href="/servers/@Server.ServerId" class="btn btn-link">Edit</a>
-        &nbsp;
-        <EditForm Model="Server"
-                  FormName="@($"form-Server-{Server.ServerId}")"
-                  OnValidSubmit="@(() => { DeleteServer(Server.ServerId); })">
-            <button type="submit" class="btn btn-primary">Delete</button>
-        </EditForm>
-
-    </li>    
+        </td>
+        <td>
+            <EditForm Model="Server"
+                      FormName="@($"form-Server-{Server.ServerId}")"
+                      OnValidSubmit="@(() => { DeleteServer(Server.ServerId); })">
+                <button type="submit" class="btn btn-primary">Delete</button>
+            </EditForm>
+        </td>
+    </tr>
 }
 
 

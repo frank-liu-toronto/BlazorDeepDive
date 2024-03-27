@@ -9,11 +9,11 @@
 <br />
 
 @if (servers != null)
-{
-    <QuickGrid Items="servers.AsQueryable()">
+{    
+    <QuickGrid Items="servers.AsQueryable()" Pagination="paginationState">
         <PropertyColumn Property="s => s.Name"></PropertyColumn>
-        <PropertyColumn Property="s => s.City"></PropertyColumn>
-        <TemplateColumn Title="Status">
+        <PropertyColumn Property="s => s.City" Sortable="true"></PropertyColumn>
+        <TemplateColumn Title="Status" Sortable="true" SortBy="GridSort<Server>.ByAscending(s => s.IsOnline)">
             @if (context.IsOnline)
             {
                 <div style="color:green">
@@ -70,12 +70,15 @@
             </ChildContent>            
         </TemplateColumn>
     </QuickGrid>
+    <Paginator State="paginationState"></Paginator>
 }
 
 
 @code {
     private List<Server>? servers = ServersRepository.GetServres();
-    
+
+    private PaginationState paginationState = new PaginationState { ItemsPerPage = 5 };
+
     private void DeleteServer(int serverId)
     {
         if (serverId > 0)

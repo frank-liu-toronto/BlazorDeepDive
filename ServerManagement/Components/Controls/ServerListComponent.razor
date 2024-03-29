@@ -1,4 +1,5 @@
 ﻿
+@inherits BaseComponent
 
 <table class="table table-striped">
     <RepeaterComponent Items="servers">
@@ -34,21 +35,44 @@
     public string? CityName { get; set; }
 
     [Parameter]
-    public string SearchFilter { get; set; } = "";
+    public string SearchFilter { get; set; } = "";    
 
-    private List<Server>? servers;
+    private List<Server>? servers;    
 
     protected override void OnParametersSet()
     {
-        if (string.IsNullOrWhiteSpace(this.SearchFilter))
+        if (isFirstRender == false)
         {
-            servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
-        }
-        else
+            if (string.IsNullOrWhiteSpace(this.SearchFilter))
+            {
+                servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
+            }
+            else
+            {
+                servers = ServersRepository.SearchServers(this.SearchFilter);
+            }
+        }        
+    }       
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);        
+
+        if (firstRender)
         {
-            servers = ServersRepository.SearchServers(this.SearchFilter);
-        }
-        
-    }   
+            // Init here
+            if (string.IsNullOrWhiteSpace(this.SearchFilter))
+            {
+                servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
+            }
+            else
+            {
+                servers = ServersRepository.SearchServers(this.SearchFilter);
+            }
+
+            StateHasChanged();
+        }                
+    }
+    
 
 }

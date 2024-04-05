@@ -25,7 +25,8 @@
         this.selectedCity = string.Empty;
     }
 
-    private string selectedCity = "Toronto";
+    [Parameter]
+    public string selectedCity { get; set; } = "Toronto";
 
     private List<String> cities = CitiesRepository.GetCities();
 

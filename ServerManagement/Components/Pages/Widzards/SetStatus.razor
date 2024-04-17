@@ -17,50 +17,67 @@
     </div>
 }
 
-@if (server is not null)
-{
+
     <FieldComponent Label="Server Status">
-        <Control>
-            @if (server.IsOnline)
-            {
+        <Control>            
                 <input type="checkbox"
-                       @bind-value="server.IsOnline"
-                        checked class="form-check-input"></input>
-            }
-            else
-            {
-                <input type="checkbox"
-                       @bind-value="server.IsOnline"
-                       class="form-check-input"></input>
-            }
+                       @bind-value="isOnline"
+                       class="form-check-input"></input>            
 
         </Control>
     </FieldComponent>
     <br />
     <button type="button" class="btn btn-primary" @onclick="Save">Save</button>
-}
+
 
 @code {
-    private Server? server;
-
     private string? errorMessage;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private bool isOnline;
+
+    [SupplyParameterFromQuery]
+    public string? ServerName { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? CityName { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            this.server = await this.sessionStorage.GetServerAsync();
-            StateHasChanged();
+            if (string.IsNullOrWhiteSpace(ServerName))
+            {
+                this.errorMessage = "Server name wasn't provided.";
+                StateHasChanged();
+            }
+            else if (string.IsNullOrWhiteSpace(CityName))
+            {
+                this.errorMessage = "City name wasn't provided.";
+                StateHasChanged();
+            }            
         }
     }
 
-    private async Task Save()
+    private void Save()
     {
-        if (server is not null)
-        {   
-            await sessionStorage.SetServerAsync(null);
-            ServersRepository.AddServer(server);
-            NavigationManager.NavigateTo($"/servers/back_from/{this.server?.City}");
+        if (string.IsNullOrWhiteSpace(ServerName))
+        {
+            this.errorMessage = "Server name wasn't provided.";
+            return;
         }
+        else if (string.IsNullOrWhiteSpace(CityName))
+        {
+            this.errorMessage = "City name wasn't provided.";
+            return;
+        }
+
+        var server = new Server
+        {
+            Name = this.ServerName,
+            City = this.CityName,
+            IsOnline = this.isOnline
+        };
+        ServersRepository.AddServer(server);
+        NavigationManager.NavigateTo($"/servers/back_from/{CityName}");     
     }
 }

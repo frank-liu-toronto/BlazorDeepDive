@@ -17,49 +17,57 @@
     </div>
 }
 
-@if (server is not null)
-{
-    <FieldComponent Label="City Name">
-        <Control>
-            <input type="text" @bind-value="server.City" class="form-control"></input>
-        </Control>
-    </FieldComponent>
-    <br />
-    <button type="button" class="btn btn-primary" @onclick="GoNext">Next</button>
-}
+
+<FieldComponent Label="City Name">
+    <Control>
+        <input type="text" @bind-value="cityName" class="form-control"></input>
+    </Control>
+</FieldComponent>
+<br />
+<button type="button" class="btn btn-primary" @onclick="GoNext">Next</button>
+
 
 @code {
-    private Server? server;
+
 
     private string? errorMessage;
+
+    private string? cityName;
+
+    [SupplyParameterFromQuery]
+    public string? ServerName { get; set; }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            this.server = await this.sessionStorage.GetServerAsync();
-            StateHasChanged();
+            if (string.IsNullOrWhiteSpace(ServerName))
+            {
+                this.errorMessage = "Server name wasn't provided.";
+                StateHasChanged();
+            }            
         }
     }
 
-    private async Task GoNext()
+    private void GoNext()
     {
-        if (server is not null)
+        if (string.IsNullOrWhiteSpace(ServerName))
         {
-            if (string.IsNullOrWhiteSpace(server.City))
-            {
-                this.errorMessage = "City Name is required.";
-            }
-            else
-            {
-                await sessionStorage.SetServerAsync(server);
-                NavigationManager.NavigateTo("/serverstatus");
-            }
+            this.errorMessage = "Server name wasn't provided.";            
         }
+        else if (string.IsNullOrWhiteSpace(cityName))
+        {
+            this.errorMessage = "City name is required.";
+        }
+        else
+        {            
+            NavigationManager.NavigateTo($"/serverstatus?servername={ServerName}&cityname={cityName}");
+        }
+       
     }
 }

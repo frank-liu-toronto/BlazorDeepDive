@@ -6,7 +6,7 @@
 @inherits BaseComponent
 
 @inject NavigationManager NavigationManager
-@inject SessionStorage sessionStorage
+@inject ContainerStorage containerStorage
 
 <h3>Server Name</h3>
 <br/>
@@ -18,40 +18,51 @@
     </div>
 }
 
+@if (server is not null)
+{
+    <FieldComponent Label="Name">
+        <Control>
+            <input type="text" @bind-value="server.Name" class="form-control"></input>
+        </Control>
+    </FieldComponent>
+    <br/>
+    <button type="button" class="btn btn-primary" @onclick="GoNext">Next</button>
+}
 
-<FieldComponent Label="Name">
-    <Control>
-        <input type="text" @bind-value="serverName" class="form-control"></input>
-    </Control>
-</FieldComponent>
-<br/>
-<button type="button" class="btn btn-primary" @onclick="GoNext">Next</button>
 
-
-
-@code {    
+@code {
+    private Server? server;
 
     private string? errorMessage;
-
-    private string? serverName;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-    }    
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            server = new Server();
+            StateHasChanged();
+        }
+    }
 
     private void GoNext()
     {
-        
-        if (string.IsNullOrWhiteSpace(serverName))
+        if (server is not null)
         {
-            this.errorMessage = "Server name is required.";
+            if (string.IsNullOrWhiteSpace(server.Name))
+            {
+                this.errorMessage = "Server Name is required.";
+            }
+            else
+            {
+                containerStorage.SetServer(server);
+                NavigationManager.NavigateTo("/cityname");
+            }            
         }
-        else
-        {            
-            NavigationManager.NavigateTo($"/cityname?servername={serverName}");
-        }            
-        
     }
 
 }

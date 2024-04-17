@@ -7,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddTransient<SessionStorage>();
+//builder.Services.AddTransient<SessionStorage>();
+builder.Services.AddScoped<ContainerStorage>();
 
 var app = builder.Build();
 

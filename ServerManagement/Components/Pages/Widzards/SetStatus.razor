@@ -1,0 +1,66 @@
+﻿@page "/serverstatus"
+@using ServerManagement.StateStore
+
+@rendermode InteractiveServer
+
+@inherits ComponentBase
+
+@inject NavigationManager NavigationManager
+@inject SessionStorage sessionStorage
+
+<h3>Server Status</h3>
+<br />
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+@if (server is not null)
+{
+    <FieldComponent Label="Server Status">
+        <Control>
+            @if (server.IsOnline)
+            {
+                <input type="checkbox"
+                       @bind-value="server.IsOnline"
+                        checked class="form-check-input"></input>
+            }
+            else
+            {
+                <input type="checkbox"
+                       @bind-value="server.IsOnline"
+                       class="form-check-input"></input>
+            }
+
+        </Control>
+    </FieldComponent>
+    <br />
+    <button type="button" class="btn btn-primary" @onclick="Save">Save</button>
+}
+
+@code {
+    private Server? server;
+
+    private string? errorMessage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.server = await this.sessionStorage.GetServerAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task Save()
+    {
+        if (server is not null)
+        {   
+            await sessionStorage.SetServerAsync(null);
+            ServersRepository.AddServer(server);
+            NavigationManager.NavigateTo($"/servers/back_from/{this.server?.City}");
+        }
+    }
+}

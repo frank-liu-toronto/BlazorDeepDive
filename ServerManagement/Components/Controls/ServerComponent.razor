@@ -1,4 +1,10 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using ServerManagement.StateStore
+@inject NavigationManager NavigationManager
+@inject TorontoOnlineServersStore TorontoOnlineServersStore
+@inject OttawaOnlineServersStore OttawaOnlineServersStore
+@inject MontrealOnlineServersStore MontrealOnlineServersStore
+@inject HalifaxOnlineServersStore HalifaxOnlineServersStore
+@inject CalgaryOnlineServersStore CalgaryOnlineServersStore
 
 @if (Server != null)
 {
@@ -29,7 +35,7 @@
             {
                 <button type="button"
                         class="btn btn-outline-danger"
-                        @onclick="@(()=> {Server.IsOnline = false;})">
+                        @onclick="@(()=> {SetServerStatus(false);})">
                     Turn Off
                 </button>
             }
@@ -37,7 +43,7 @@
             {
                 <button type="button"
                         class="btn btn-outline-success"
-                        @onclick="@(()=> {Server.IsOnline = true;})">
+                        @onclick="@(()=> {SetServerStatus(true);})">
                     Turn On
                 </button>
             }
@@ -93,5 +99,57 @@
             return "white";
         }
 
+    }
+
+    private void SetServerStatus(bool status)
+    {
+        if (this.Server is not null)
+        {
+            if (this.Server.IsOnline != status)
+            {
+                int num = 0;
+                switch (this.Server.City)
+                {
+                    case "Toronto":
+                        num = TorontoOnlineServersStore.GetNumberServersOnline();
+                        if (status)
+                            TorontoOnlineServersStore.SetNumbersServersOnline(num + 1);
+                        else if (num >= 1)
+                            TorontoOnlineServersStore.SetNumbersServersOnline(num - 1);
+                        break;
+                    case "Montreal":
+                        num = MontrealOnlineServersStore.GetNumberServersOnline();
+                        if (status)
+                            MontrealOnlineServersStore.SetNumbersServersOnline(num + 1);
+                        else if (num >= 1)
+                            MontrealOnlineServersStore.SetNumbersServersOnline(num - 1);
+                        break;
+                    case "Ottawa":
+                        num = OttawaOnlineServersStore.GetNumberServersOnline();
+                        if (status)
+                            OttawaOnlineServersStore.SetNumbersServersOnline(num + 1);
+                        else if (num >= 1)
+                            OttawaOnlineServersStore.SetNumbersServersOnline(num - 1);
+                        break;
+                    case "Calgary":
+                        num = CalgaryOnlineServersStore.GetNumberServersOnline();
+                        if (status)
+                            CalgaryOnlineServersStore.SetNumbersServersOnline(num + 1);
+                        else if (num >= 1)
+                            CalgaryOnlineServersStore.SetNumbersServersOnline(num - 1);
+                        break;
+                    case "Halifax":
+                        num = HalifaxOnlineServersStore.GetNumberServersOnline();
+                        if (status)
+                            HalifaxOnlineServersStore.SetNumbersServersOnline(num + 1);
+                        else if (num >= 1)
+                            HalifaxOnlineServersStore.SetNumbersServersOnline(num - 1);
+                        break;
+                }
+
+                this.Server.IsOnline = status;
+            }            
+        }
+        
     }
 }

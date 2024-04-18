@@ -1,4 +1,7 @@
 ﻿@using ServerManagement.StateStore
+
+@implements IDisposable
+
 @inject TorontoOnlineServersStore TorontoOnlineServersStore
 @inject OttawaOnlineServersStore OttawaOnlineServersStore
 @inject MontrealOnlineServersStore MontrealOnlineServersStore
@@ -84,7 +87,7 @@
                     HalifaxOnlineServersStore.AddStateChangeListeners(OnHalifaxServersStatusChange);
                     break;
             }
-            
+
             StateHasChanged();
         }
     }
@@ -117,6 +120,28 @@
     {
         numberServersOnlineHalifax = HalifaxOnlineServersStore.GetNumberServersOnline();
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        switch (city)
+        {
+            case "Toronto":
+                TorontoOnlineServersStore.RemoveStateChangeListeners(OnTorontoServersStatusChange);
+                break;
+            case "Montreal":
+                MontrealOnlineServersStore.RemoveStateChangeListeners(OnMontrealServersStatusChange);
+                break;
+            case "Ottawa":
+                OttawaOnlineServersStore.RemoveStateChangeListeners(OnOttawaServersStatusChange);
+                break;
+            case "Calgary":
+                CalgaryOnlineServersStore.RemoveStateChangeListeners(OnCalgaryServersStatusChange);
+                break;
+            case "Halifax":
+                HalifaxOnlineServersStore.RemoveStateChangeListeners(OnHalifaxServersStatusChange);
+                break;
+        }        
     }
 
 }

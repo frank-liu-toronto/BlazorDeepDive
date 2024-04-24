@@ -1,6 +1,8 @@
 ﻿
 @inherits BaseComponent
 
+@inject IServersEFCoreRepository ServersEFCoreRepository
+
 <table class="table table-striped">
     <RepeaterComponent Items="servers">
         <Header>
@@ -68,11 +70,11 @@
         {
             if (string.IsNullOrWhiteSpace(this.SearchFilter))
             {
-                servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
+                servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "Toronto");
             }
             else
             {
-                servers = ServersRepository.SearchServers(this.SearchFilter);
+                servers = ServersEFCoreRepository.SearchServers(this.SearchFilter);
             }
         }        
     }       
@@ -86,11 +88,11 @@
             // Init here
             if (string.IsNullOrWhiteSpace(this.SearchFilter))
             {
-                servers = ServersRepository.GetServersByCity(CityName ?? "Toronto");
+                servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "Toronto");
             }
             else
             {
-                servers = ServersRepository.SearchServers(this.SearchFilter);
+                servers = ServersEFCoreRepository.SearchServers(this.SearchFilter);
             }
 
             StateHasChanged();

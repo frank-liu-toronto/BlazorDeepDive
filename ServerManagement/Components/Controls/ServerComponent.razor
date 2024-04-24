@@ -5,6 +5,8 @@
 @inject MontrealOnlineServersStore MontrealOnlineServersStore
 @inject HalifaxOnlineServersStore HalifaxOnlineServersStore
 @inject CalgaryOnlineServersStore CalgaryOnlineServersStore
+@inject IServersEFCoreRepository ServersEFCoreRepository
+
 
 @if (Server != null)
 {
@@ -74,7 +76,7 @@
     {
         if (serverId > 0)
         {
-            ServersRepository.DeleteServer(serverId);
+            ServersEFCoreRepository.DeleteServer(serverId);
             NavigationManager.NavigateTo("/servers", true);
         }
     }
@@ -148,6 +150,8 @@
                 }
 
                 this.Server.IsOnline = status;
+
+                ServersEFCoreRepository.UpdateServer(this.Server.ServerId, Server);
             }            
         }
         

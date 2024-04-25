@@ -1,0 +1,84 @@
+﻿@page "/wasm/servers/{id:int}"
+@using WebAssemblyDemo.Client.Models
+
+@rendermode InteractiveWebAssembly
+
+@inject NavigationManager NavigationManager
+
+<h3>Edit Server</h3>
+<br/>
+<br/>
+
+@if (server != null)
+{
+    <EditForm Model="server" FormName="formServer" OnValidSubmit="Submit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+
+        <InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="col-form-label">Name</label>
+            </div>
+            <div class="col-6">
+                <InputText @bind-Value="server.Name" class="form-control"></InputText>
+            </div>
+            <div class="col">
+                <ValidationMessage For="() => server.Name"></ValidationMessage>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="col-form-label">City</label>
+            </div>
+            <div class="col-6">
+                <InputText @bind-Value="server.City" class="form-control"></InputText>
+            </div>
+            <div class="col">
+                <ValidationMessage For="() => server.City"></ValidationMessage>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="col-form-label">Online</label>
+            </div>
+            <div class="col-6">
+                <InputCheckbox @bind-Value="server.IsOnline" class="form-check-input"></InputCheckbox>
+            </div>
+        </div>
+        
+        <br/>
+        <button class="btn btn-primary" type="submit">Update</button>
+        &nbsp;
+        <a href="/servers" class="btn btn-primary">Close</a>
+    </EditForm>
+}
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+    
+    private Server? server { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        server ??= ServersRepository.GetServerById(this.Id);
+    }
+
+    private void Submit()
+    {
+        if (server != null)
+        {
+            ServersRepository.UpdateServer(server.ServerId, server);
+        }
+
+        NavigationManager.NavigateTo($"/wasm/servers/");        
+        
+    }
+
+}

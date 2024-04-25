@@ -1,0 +1,67 @@
+﻿@page "/wasm/servers"
+@using WebAssemblyDemo.Client.Models
+
+@rendermode InteractiveWebAssembly
+
+@inject NavigationManager NavigationManager
+
+<h3>Servers</h3>
+<br />
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                City
+            </th>
+            <th>
+                Status
+            </th>            
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (listServers.Any())
+        {
+            foreach(var server in listServers)
+            {
+                @if (server is not null)
+                {
+                    <tr>
+                        <td>@server.Name</td>
+                        <td>@server.City</td>
+                        <td>@(server.IsOnline ? "Online" : "Offline")</td>
+                        <td><a class="btn btn-link" href="/wasm/servers/@server.ServerId">Edit</a></td>
+                        <td><button class="btn btn-link" @onclick="@(()=> { Delete(server.ServerId); })">Delete</button></td>
+                    </tr>
+                }                
+            }
+        }
+    </tbody>
+</table>
+<br/>
+<a class="btn btn-primary" href="/wasm/servers/add">Add Server</a>
+
+@code {
+    public List<Server> listServers { get; set; } = new List<Server>();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            listServers = ServersRepository.GetServers();
+            StateHasChanged();
+        }
+    }
+
+    private void Delete(int serverId)
+    {
+        ServersRepository.DeleteServer(serverId);
+        listServers = ServersRepository.GetServers();
+    }
+}         

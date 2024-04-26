@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Text;
 
 namespace WebAssemblyDemo.Client.Models
 {
@@ -27,5 +28,26 @@ namespace WebAssemblyDemo.Client.Models
             else
                 return new List<Server>();
         }
+
+        public async Task AddServerAsync(Server server)
+        {
+            server.ServerId = await GetNextServerIdAsync();
+
+            var httpClient = httpClientFactory.CreateClient(apiName);
+            var content = new StringContent(JsonConvert.SerializeObject(server), Encoding.UTF8, "application/json") ;
+
+            var response = await httpClient.PutAsync($"servers/{server.ServerId}.json", content);
+            response.EnsureSuccessStatusCode();
+        }
+
+        private async Task<int> GetNextServerIdAsync()
+        {
+            var servers = await GetServersAsync();
+            if (servers is not null && servers.Any())
+                return servers.Where(x => x is not null).Max(x => x.ServerId) + 1;
+
+            return 1;
+        }
+
     }
 }

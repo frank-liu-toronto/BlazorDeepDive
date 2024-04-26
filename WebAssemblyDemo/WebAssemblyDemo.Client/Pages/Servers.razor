@@ -4,6 +4,7 @@
 @rendermode InteractiveWebAssembly
 
 @inject NavigationManager NavigationManager
+@inject IServersRepository ServersApiRepository
 
 <h3>Servers</h3>
 <br />
@@ -37,7 +38,7 @@
                         <td>@server.City</td>
                         <td>@(server.IsOnline ? "Online" : "Offline")</td>
                         <td><a class="btn btn-link" href="/wasm/servers/@server.ServerId">Edit</a></td>
-                        <td><button class="btn btn-link" @onclick="@(()=> { Delete(server.ServerId); })">Delete</button></td>
+                        <td><button class="btn btn-link" @onclick="@( async ()=> { await Delete(server.ServerId); })">Delete</button></td>
                     </tr>
                 }                
             }
@@ -50,18 +51,18 @@
 @code {
     public List<Server> listServers { get; set; } = new List<Server>();
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            listServers = ServersRepository.GetServers();
+            listServers = await ServersApiRepository.GetServersAsync();
             StateHasChanged();
         }
     }
 
-    private void Delete(int serverId)
+    private async Task Delete(int serverId)
     {
         ServersRepository.DeleteServer(serverId);
-        listServers = ServersRepository.GetServers();
+        listServers = await ServersApiRepository.GetServersAsync();
     }
 }         

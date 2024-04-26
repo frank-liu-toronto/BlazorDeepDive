@@ -4,6 +4,7 @@
 @rendermode InteractiveWebAssembly
 
 @inject NavigationManager NavigationManager
+@inject IServersRepository ServersApiRepository
 
 <h3>Edit Server</h3>
 <br/>
@@ -65,16 +66,16 @@
     
     private Server? server { get; set; }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        server ??= ServersRepository.GetServerById(this.Id);
+        server ??= await ServersApiRepository.GetServerByIdAsync(this.Id);
     }
 
-    private void Submit()
+    private async Task Submit()
     {
         if (server != null)
         {
-            ServersRepository.UpdateServer(server.ServerId, server);
+            await ServersApiRepository.UpdateServerAsync(server.ServerId, server);
         }
 
         NavigationManager.NavigateTo($"/wasm/servers/");        

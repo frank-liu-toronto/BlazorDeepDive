@@ -2,7 +2,7 @@
 @page "/servers/back_from/{cityName}"
 @using ServerManagement.StateStore
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @inject NavigationManager NavigationManager
 @inject TorontoOnlineServersStore TorontoOnlineServersStore
@@ -31,8 +31,7 @@
 <br/>
 
 <CascadingValue Name="SelectedCity" Value="@selectedCity">
-    <ServerListComponent 
-        @rendermode="InteractiveServer" 
+    <ServerListComponent         
         CityName="@this.selectedCity"
         SearchFilter="@searchFilter"></ServerListComponent>
 </CascadingValue>

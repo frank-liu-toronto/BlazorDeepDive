@@ -1,7 +1,10 @@
 ﻿@page "/cityname"
+@using Microsoft.AspNetCore.Authorization
 @using ServerManagement.StateStore
 
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 @inherits ComponentBase
 

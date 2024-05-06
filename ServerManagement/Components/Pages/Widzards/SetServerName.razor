@@ -1,7 +1,10 @@
 ﻿@page "/servername"
+@using Microsoft.AspNetCore.Authorization
 @using ServerManagement.StateStore
 
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 @inherits BaseComponent
 

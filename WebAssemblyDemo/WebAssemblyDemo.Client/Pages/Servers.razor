@@ -1,10 +1,13 @@
 ﻿@page "/wasm/servers"
 @using WebAssemblyDemo.Client.Models
 
-@rendermode @(new InteractiveWebAssemblyRenderMode(prerender:false))
+@implements IDisposable
+
+@rendermode InteractiveWebAssembly
 
 @inject NavigationManager NavigationManager
 @inject IServersRepository ServersApiRepository
+@inject PersistentComponentState ApplicationState
 
 <h3>Servers</h3>
 <br />
@@ -54,17 +57,7 @@
 
 @code {
     public List<Server> listServers { get; set; } = new List<Server>();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await Task.Delay(1000);
-
-            listServers = await ServersApiRepository.GetServersAsync();
-            StateHasChanged();
-        }
-    }
+    private PersistingComponentStateSubscription persistingSubscription;    
 
     private async Task Delete(int serverId)
     {
@@ -72,12 +65,32 @@
         listServers = await ServersApiRepository.GetServersAsync();
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
 
         var guid = Guid.NewGuid();
         Console.WriteLine($"{this.GetType().Name}: {nameof(OnInitialized)} : {guid}");
+
+        persistingSubscription =
+            ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (!ApplicationState.TryTakeFromJson<List<Server>?>(
+            "Servers", out var restored))
+        {
+            listServers = await ServersApiRepository.GetServersAsync();
+        }
+        else
+        {
+            listServers = restored!;
+        }
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson("Servers", listServers);
+
+        return Task.CompletedTask;
     }
 
     public override Task SetParametersAsync(ParameterView parameters)
@@ -110,5 +123,10 @@
 
         var guid = Guid.NewGuid();
         Console.WriteLine($"{this.GetType().Name}: {nameof(OnAfterRender)} : {guid}");
+    }
+
+    void IDisposable.Dispose()
+    {
+        persistingSubscription.Dispose();
     }
 }         

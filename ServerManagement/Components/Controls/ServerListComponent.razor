@@ -1,7 +1,11 @@
 ﻿
 @inherits BaseComponent
 
+@implements IDisposable
+
 @inject IServersEFCoreRepository ServersEFCoreRepository
+
+@inject PersistentComponentState ApplicationState
 
 @if (servers is null)
 {
@@ -51,6 +55,8 @@ else
 
     private System.Threading.Timer? Timer;
 
+    private PersistingComponentStateSubscription persistingSubscription;
+
     public override Task SetParametersAsync(ParameterView parameters)
     {
         var guid = Guid.NewGuid();
@@ -79,55 +85,55 @@ else
     {
         var guid = Guid.NewGuid();
         Console.WriteLine($"{this.GetType().Name}: {nameof(OnParametersSet)} : {guid}");
-
-        if (isFirstRender == false)
+        
+        if (string.IsNullOrWhiteSpace(this.SearchFilter))
         {
-            if (string.IsNullOrWhiteSpace(this.SearchFilter))
-            {
-                servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "Toronto");
-            }
-            else
-            {
-                servers = ServersEFCoreRepository.SearchServers(this.SearchFilter);
-            }
-        }        
-    }       
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);        
-
-        if (firstRender)
+            servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "Toronto");
+        }
+        else
         {
-            // Init here
-
-            await Task.Delay(1000);
-
-            if (string.IsNullOrWhiteSpace(this.SearchFilter))
-            {
-                servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "Toronto");
-            }
-            else
-            {
-                servers = ServersEFCoreRepository.SearchServers(this.SearchFilter);
-            }
-
-            StateHasChanged();
-
-            Timer = new System.Threading.Timer(_ =>
-                {
-                    base.InvokeAsync(StateHasChanged);
-                }, null, 5000, 5000);
-        }                
-    }
+            servers = ServersEFCoreRepository.SearchServers(this.SearchFilter);
+        }
+                
+    }    
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
-
         var guid = Guid.NewGuid();
         Console.WriteLine($"{this.GetType().Name}: {nameof(OnInitialized)} : {guid}");
-    }    
+
+        persistingSubscription =
+            ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (!ApplicationState.TryTakeFromJson <List<Server>?> (
+            "Servers", out var restored))
+        {
+            if (string.IsNullOrWhiteSpace(this.SearchFilter))
+            {
+                servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "Toronto");
+            }
+            else
+            {
+                servers = ServersEFCoreRepository.SearchServers(this.SearchFilter);
+            }
+        }
+        else
+        {
+            servers = restored!;
+        }
+
+        Timer = new System.Threading.Timer(_ =>
+            {
+                base.InvokeAsync(StateHasChanged);
+            }, null, 5000, 5000);
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson("Servers", servers);
+
+        return Task.CompletedTask;
+    }
 
     protected override bool ShouldRender()
     {
@@ -145,5 +151,8 @@ else
         Console.WriteLine($"{this.GetType().Name}: {nameof(OnAfterRender)} : {guid}");
     }
     
-
+    void IDisposable.Dispose()
+    {
+        persistingSubscription.Dispose();
+    }
 }

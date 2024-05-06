@@ -40,8 +40,12 @@
                         <td><a class="btn btn-link" href="/wasm/servers/@server.ServerId">Edit</a></td>
                         <td><button class="btn btn-link" @onclick="@( async ()=> { await Delete(server.ServerId); })">Delete</button></td>
                     </tr>
-                }                
+                }
             }
+        }
+        else
+        {
+            <p><em>Loading...</em></p>
         }
     </tbody>
 </table>
@@ -55,6 +59,8 @@
     {
         if (firstRender)
         {
+            await Task.Delay(1000);
+
             listServers = await ServersApiRepository.GetServersAsync();
             StateHasChanged();
         }

@@ -3,33 +3,41 @@
 
 @inject IServersEFCoreRepository ServersEFCoreRepository
 
-<table class="table table-striped">
-    <RepeaterComponent Items="servers">
-        <Header>
-        <thead>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    City
-                </th>
-                <th>
-                    Status
-                </th>
-                <th>
-                    People Online
-                </th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        </Header>
-        <Row Context="server">
-            <ServerComponent Server="server"></ServerComponent>
-        </Row>
-    </RepeaterComponent>
-</table>
+@if (servers is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <RepeaterComponent Items="servers">
+            <Header>
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        City
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        People Online
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            </Header>
+            <Row Context="server">
+                <ServerComponent Server="server"></ServerComponent>
+            </Row>
+        </RepeaterComponent>
+    </table>
+}
+
 
 @code {
 
@@ -79,13 +87,16 @@
         }        
     }       
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         base.OnAfterRender(firstRender);        
 
         if (firstRender)
         {
             // Init here
+
+            await Task.Delay(1000);
+
             if (string.IsNullOrWhiteSpace(this.SearchFilter))
             {
                 servers = ServersEFCoreRepository.GetServersByCity(CityName ?? "Toronto");
